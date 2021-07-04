@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  Lambda SNS Publish
+Parameters:
+  LambdaExecutionRole:
+    Default: arn:aws:iam::$$$$$$$$:role/lambda_basic_execution
+    Type: String
+Resources:
+  SNSTopic:
+    DependsOn: LamabdaFunction
+    Type: AWS::SNS::Topic
+    Properties:
+        DisplayName: !Sub 'sns-topic'
+        TopicName: !Sub 'sns-topic'
+        Subscription:
+          - Protocol: lambda
+            Endpoint: !GetAtt LamabdaFunction.Arn
+    
+  LamabdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+        Code:
+          S3Bucket: productionapp-giri
+          S3Key: snslambda.zip
+        Handler: index.handler
+        Role: !Ref LambdaExecutionRole
+        Runtime: python3.7
+
+  LambdaInvokePermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+        Action: 'lambda:InvokeFunction'
+        FunctionName: !Ref LamabdaFunction
+        Principal: sns.amazonaws.com   
+        
+
+  SNSTopicPolicy:
+    Type: 'AWS::SNS::TopicPolicy'
+    Properties:
+        Topics:
+          - !Ref SNSTopic   
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action: 'sns:Publish'
+              Resource: !Ref SNSTopic
+              Principal:
+                AWS: '*'
+              Condition:
+                ArnLike:
+                  AWS:SourceArn: !GetAtt LamabdaFunction.Arn
