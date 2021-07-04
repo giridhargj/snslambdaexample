@@ -5,6 +5,12 @@ Parameters:
   LambdaExecutionRole:
     Default: arn:aws:iam::$$$$$$$$:role/lambda_basic_execution
     Type: String
+  S3Bucket:
+    Default: lamabdaartifacts
+    Type: String
+  S3FileName:
+    Default: snslambda.zip
+    Type: String
 Resources:
   SNSTopic:
     DependsOn: LamabdaFunction
@@ -20,8 +26,8 @@ Resources:
     Type: AWS::Lambda::Function
     Properties:
         Code:
-          S3Bucket: productionapp-giri
-          S3Key: snslambda.zip
+          S3Bucket: !Ref S3Bucket
+          S3Key: !Ref S3FileName
         Handler: index.handler
         Role: !Ref LambdaExecutionRole
         Runtime: python3.7

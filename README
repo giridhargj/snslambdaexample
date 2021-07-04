@@ -1,0 +1,10 @@
+Triggering Lambda with SNS Event
+
+This repo demonstrates sample program to read SNS event in lamabda.
+
+Follow Below Steps to deploy the sample template.
+The template Creates SNS Topic, Lambda function and Topic Subscription to Lamabda.
+
+Step 1: Update parameters.json as per your environment.
+Step 2: Create a zip of lamabda code and upload to S3 Bucket. (snslambda.zip in this case) 
+Step 3: aws cloudformation create-stack --stack-name snslambda --template-body  file://template.yaml [Dont forget to set up aws creds using aws configure before running this command]
